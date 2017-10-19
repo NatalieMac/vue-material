@@ -237,12 +237,14 @@
       this.$nextTick(() => {
         this.menuTrigger = this.$el.querySelector('[md-menu-trigger]');
         this.menuContent = this.$el.querySelector('.md-menu-content');
-        this.backdropElement = this.$refs.backdrop.$el;
+        if (this.$refs.backdrop) {
+          this.backdropElement = this.$refs.backdrop.$el;
+          this.$el.removeChild(this.$refs.backdrop.$el);
+        }
         this.validateMenu();
         this.handleAlignTriggerClass(this.mdAlignTrigger);
         this.addNewSizeMenuContentClass(this.mdSize);
         this.addNewDirectionMenuContentClass(this.mdDirection);
-        this.$el.removeChild(this.$refs.backdrop.$el);
         this.menuContent.parentNode.removeChild(this.menuContent);
 
         if (!this.mdManualToggle) {
@@ -253,10 +255,12 @@
     beforeDestroy() {
       if (document.body.contains(this.menuContent)) {
         document.body.removeChild(this.menuContent);
-        document.body.removeChild(this.backdropElement);
+        if (this.backdropElement) {
+          document.body.removeChild(this.backdropElement);
+        }
       }
 
-      if (!this.mdManualToggle) {
+      if (!this.mdManualToggle && this.menuTrigger) {
         this.menuTrigger.removeEventListener('click', this.toggle);
       }
 
